@@ -1,0 +1,22 @@
+# 运行产物
+runs/
+!runs/.gitkeep
+
+# EDA 工具链（600MB 级别，不入库）
+tools/
+*.tgz
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+
+# 密钥：绝对不要提交
+.env
+*.key

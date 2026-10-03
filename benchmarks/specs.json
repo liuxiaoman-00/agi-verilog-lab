@@ -1,0 +1,232 @@
+[
+  {
+    "id": "cmp4",
+    "title": "4 位无符号数值比较器",
+    "description": "module 名须为 cmp4。输入 a[3:0]、b[3:0]（均为无符号二进制数），输出 gt、eq、lt（均为 1 位）。当 a>b 时 gt=1，否则 0；当 a==b 时 eq=1，否则 0；当 a<b 时 lt=1，否则 0。三个输出互斥且恰好一个为 1。纯组合逻辑，不得使用 parameter，端口名与位宽必须完全一致。",
+    "module": "cmp4",
+    "kind": "combinational",
+    "ports": [
+      {"name": "a", "direction": "input", "width": 4},
+      {"name": "b", "direction": "input", "width": 4},
+      {"name": "gt", "direction": "output", "width": 1},
+      {"name": "eq", "direction": "output", "width": 1},
+      {"name": "lt", "direction": "output", "width": 1}
+    ],
+    "stimulus": {"mode": "exhaustive"},
+    "difficulty": "easy",
+    "tags": ["组合逻辑", "比较器"]
+  },
+  {
+    "id": "mux2v",
+    "title": "二选一 4 位数据选择器",
+    "description": "module 名须为 mux2v。输入 in0[3:0]、in1[3:0]、sel（1 位），输出 y[3:0]。sel=0 时 y=in0，sel=1 时 y=in1。纯组合逻辑，不得使用 parameter，端口名与位宽必须完全一致。",
+    "module": "mux2v",
+    "kind": "combinational",
+    "ports": [
+      {"name": "in0", "direction": "input", "width": 4},
+      {"name": "in1", "direction": "input", "width": 4},
+      {"name": "sel", "direction": "input", "width": 1},
+      {"name": "y", "direction": "output", "width": 4}
+    ],
+    "stimulus": {"mode": "exhaustive"},
+    "difficulty": "easy",
+    "tags": ["组合逻辑", "数据选择器"]
+  },
+  {
+    "id": "add4",
+    "title": "4 位行波进位加法器",
+    "description": "module 名须为 add4。输入 a[3:0]、b[3:0]、cin（1 位进位输入），输出 sum[3:0]、cout（1 位进位输出）。计算 {cout, sum} = a + b + cin，结果按 2 的补码取低 4 位，cout 为第 5 位（即是否溢出到 16）。纯组合逻辑，不得使用 parameter。",
+    "module": "add4",
+    "kind": "combinational",
+    "ports": [
+      {"name": "a", "direction": "input", "width": 4},
+      {"name": "b", "direction": "input", "width": 4},
+      {"name": "cin", "direction": "input", "width": 1},
+      {"name": "sum", "direction": "output", "width": 4},
+      {"name": "cout", "direction": "output", "width": 1}
+    ],
+    "stimulus": {"mode": "exhaustive"},
+    "difficulty": "easy",
+    "tags": ["组合逻辑", "算术单元"]
+  },
+  {
+    "id": "dec38",
+    "title": "带使能的 3-8 译码器",
+    "description": "module 名须为 dec38。输入 en（1 位使能）、addr[2:0]（3 位地址），输出 y[7:0]。en=1 时 y 为独热码，仅 y[addr] 置 1，其余为 0；en=0 时 y 全为 0。纯组合逻辑，不得使用 parameter。",
+    "module": "dec38",
+    "kind": "combinational",
+    "ports": [
+      {"name": "en", "direction": "input", "width": 1},
+      {"name": "addr", "direction": "input", "width": 3},
+      {"name": "y", "direction": "output", "width": 8}
+    ],
+    "stimulus": {"mode": "exhaustive"},
+    "difficulty": "easy",
+    "tags": ["组合逻辑", "译码器"]
+  },
+  {
+    "id": "penc8",
+    "title": "8-3 优先编码器",
+    "description": "module 名须为 penc8。输入 din[7:0]，输出 code[2:0]、valid（1 位）。优先级从高位到低位递减，即 din[7] 优先级最高、din[0] 最低。若输入中至少有一位为 1，则 code 为其中优先级最高的那一位的序号（0~7），valid=1；若 din 全为 0，则 code=0，valid=0。纯组合逻辑，不得使用 parameter。",
+    "module": "penc8",
+    "kind": "combinational",
+    "ports": [
+      {"name": "din", "direction": "input", "width": 8},
+      {"name": "code", "direction": "output", "width": 3},
+      {"name": "valid", "direction": "output", "width": 1}
+    ],
+    "stimulus": {"mode": "exhaustive"},
+    "difficulty": "medium",
+    "tags": ["组合逻辑", "编码器"]
+  },
+  {
+    "id": "bcdadd",
+    "title": "一位十进制（BCD）加法器",
+    "description": "module 名须为 bcdadd。输入 a[3:0]、b[3:0]（各视为 0~15 的无符号二进制数），输出 units[3:0]、carry（1 位）。先把 a 与 b 相加得到十进制和 s（取值 0~30），units = s 的个位数字（s 除以 10 的余数），carry = 1 当且仅当 s >= 10。纯组合逻辑，不得使用 parameter。",
+    "module": "bcdadd",
+    "kind": "combinational",
+    "ports": [
+      {"name": "a", "direction": "input", "width": 4},
+      {"name": "b", "direction": "input", "width": 4},
+      {"name": "units", "direction": "output", "width": 4},
+      {"name": "carry", "direction": "output", "width": 1}
+    ],
+    "stimulus": {"mode": "exhaustive"},
+    "difficulty": "medium",
+    "tags": ["组合逻辑", "算术单元"]
+  },
+  {
+    "id": "alu4",
+    "title": "4 位多功能算术逻辑单元",
+    "description": "module 名须为 alu4。输入 a[3:0]、b[3:0]、op[2:0]，输出 y[3:0]、zero（1 位）。op 编码如下：000 -> y=a+b；001 -> y=a-b；010 -> y=a&b；011 -> y=a|b；100 -> y=a^b；101 -> y=a 逻辑左移 1 位（低位补 0，即 {a[2:0],1'b0}）；110 -> y=a 的按位取反；111 -> y = (a<b) ? 4'h1 : 4'h0。所有运算结果取低 4 位。zero = (y == 4'h0)。纯组合逻辑，不得使用 parameter。",
+    "module": "alu4",
+    "kind": "combinational",
+    "ports": [
+      {"name": "a", "direction": "input", "width": 4},
+      {"name": "b", "direction": "input", "width": 4},
+      {"name": "op", "direction": "input", "width": 3},
+      {"name": "y", "direction": "output", "width": 4},
+      {"name": "zero", "direction": "output", "width": 1}
+    ],
+    "stimulus": {"mode": "exhaustive"},
+    "difficulty": "medium",
+    "tags": ["组合逻辑", "算术单元"]
+  },
+  {
+    "id": "posdet",
+    "title": "同步上升沿检测器",
+    "description": "module 名须为 posdet。输入 clk、rst_n（低电平异步复位）、x（1 位信号），输出 y（1 位）。功能是同步上升到下降的转换检测：当 x 出现由 0 到 1 的跳变后，y 保持恰好一个 clk 周期为 1，其余时刻为 0。要求 y 是**寄存器输出**（Moore 型），即在 clk 上升沿采样 x 并更新 y，y 的变化发生在时钟边沿之后。rst_n 为低时，y 与内部状态清零。不得使用 parameter。",
+    "module": "posdet",
+    "kind": "sequential",
+    "clock": "clk",
+    "reset": "rst_n",
+    "reset_active": "low",
+    "ports": [
+      {"name": "clk", "direction": "input", "width": 1},
+      {"name": "rst_n", "direction": "input", "width": 1},
+      {"name": "x", "direction": "input", "width": 1},
+      {"name": "y", "direction": "output", "width": 1}
+    ],
+    "stimulus": {"mode": "debruijn", "order": 7},
+    "difficulty": "medium",
+    "tags": ["时序逻辑", "边沿检测"]
+  },
+  {
+    "id": "sipo4",
+    "title": "4 位串行输入并行输出移位寄存器",
+    "description": "module 名须为 sipo4。输入 clk、rst_n（低电平异步复位）、din（1 位串行数据），输出 q[3:0]。每个 clk 上升沿执行一次左移：q <= {q[2:0], din}，即 din 从最低位串行移入，先输入的数据向高位移动。rst_n 为低时 q 清零。不得使用 parameter。",
+    "module": "sipo4",
+    "kind": "sequential",
+    "clock": "clk",
+    "reset": "rst_n",
+    "reset_active": "low",
+    "ports": [
+      {"name": "clk", "direction": "input", "width": 1},
+      {"name": "rst_n", "direction": "input", "width": 1},
+      {"name": "din", "direction": "input", "width": 1},
+      {"name": "q", "direction": "output", "width": 4}
+    ],
+    "stimulus": {"mode": "debruijn", "order": 7},
+    "difficulty": "easy",
+    "tags": ["时序逻辑", "移位寄存器"]
+  },
+  {
+    "id": "cnt12",
+    "title": "带使能与预置的模 12 计数器",
+    "description": "module 名须为 cnt12。输入 clk、rst_n（低电平异步复位）、en（1 位计数使能）、load（1 位同步预置）、d[3:0]（预置值），输出 q[3:0]。每个 clk 上升沿按优先级更新：若 load=1 则 q<=d；否则若 en=1 则 q <= (q == 4'd11) ? 4'd0 : q + 4'd1；否则保持。注意 load 优先级高于 en。rst_n 为低时 q 清零。不得使用 parameter。",
+    "module": "cnt12",
+    "kind": "sequential",
+    "clock": "clk",
+    "reset": "rst_n",
+    "reset_active": "low",
+    "ports": [
+      {"name": "clk", "direction": "input", "width": 1},
+      {"name": "rst_n", "direction": "input", "width": 1},
+      {"name": "en", "direction": "input", "width": 1},
+      {"name": "load", "direction": "input", "width": 1},
+      {"name": "d", "direction": "input", "width": 4},
+      {"name": "q", "direction": "output", "width": 4}
+    ],
+    "stimulus": {"mode": "boundary+random", "n": 600, "seed": 20261002},
+    "difficulty": "medium",
+    "tags": ["时序逻辑", "计数器"]
+  },
+  {
+    "id": "seq1011",
+    "title": "重叠式 1011 序列检测器",
+    "description": "module 名须为 seq1011。输入 clk、rst_n（低电平异步复位）、x（1 位串行输入），输出 y（1 位）。在每个 clk 上升沿采样一位 x，检测串行比特流中是否出现模式 1011（允许重叠匹配，例如输入 1011011 会在第 4 位和第 7 位各检出一次）。y 必须是**寄存器输出**：当某个时钟沿采样到的比特刚好使模式匹配完成时，y 在该时钟沿之后的那个周期为 1，持续恰好一个 clk 周期，其余时刻为 0。rst_n 为低时状态与 y 清零。不得使用 parameter。",
+    "module": "seq1011",
+    "kind": "sequential",
+    "clock": "clk",
+    "reset": "rst_n",
+    "reset_active": "low",
+    "ports": [
+      {"name": "clk", "direction": "input", "width": 1},
+      {"name": "rst_n", "direction": "input", "width": 1},
+      {"name": "x", "direction": "input", "width": 1},
+      {"name": "y", "direction": "output", "width": 1}
+    ],
+    "stimulus": {"mode": "debruijn", "order": 9},
+    "difficulty": "hard",
+    "tags": ["时序逻辑", "有限状态机"]
+  },
+  {
+    "id": "traffic",
+    "title": "定时交通灯状态机",
+    "description": "module 名须为 traffic。输入 clk、rst_n（低电平异步复位），输出 light[1:0]。light 编码：2'd0=红灯，2'd1=黄灯，2'd2=绿灯。上电/复位后立刻进入绿灯，并按「绿灯 -> 黄灯 -> 红灯 -> 绿灯」循环，各状态持续时长以 clk 周期计：绿灯 5 个周期、黄灯 2 个周期、红灯 4 个周期（含该状态计数的每一个 clk 周期）。状态切换发生在 clk 上升沿。rst_n 为低时回到绿灯且重新计时。不得使用 parameter。",
+    "module": "traffic",
+    "kind": "sequential",
+    "clock": "clk",
+    "reset": "rst_n",
+    "reset_active": "low",
+    "ports": [
+      {"name": "clk", "direction": "input", "width": 1},
+      {"name": "rst_n", "direction": "input", "width": 1},
+      {"name": "light", "direction": "output", "width": 2}
+    ],
+    "stimulus": {"mode": "constant", "n": 260, "seed": 7},
+    "difficulty": "hard",
+    "tags": ["时序逻辑", "有限状态机"]
+  },
+  {
+    "id": "unishift4",
+    "title": "四位通用移位寄存器",
+    "description": "module 名须为 unishift4。输入 clk、rst_n（低电平异步复位）、mode[1:0]、si（1 位串行输入）、d[3:0]（并行数据），输出 q[3:0]。每个 clk 上升沿按 mode 更新 q：2'b00 保持 q 不变；2'b01 左移一位 q <= {q[2:0], si}；2'b10 右移一位 q <= {si, q[3:1]}；2'b11 并行加载 q <= d。rst_n 为低时 q 清零。不得使用 parameter。",
+    "module": "unishift4",
+    "kind": "sequential",
+    "clock": "clk",
+    "reset": "rst_n",
+    "reset_active": "low",
+    "ports": [
+      {"name": "clk", "direction": "input", "width": 1},
+      {"name": "rst_n", "direction": "input", "width": 1},
+      {"name": "mode", "direction": "input", "width": 2},
+      {"name": "si", "direction": "input", "width": 1},
+      {"name": "d", "direction": "input", "width": 4},
+      {"name": "q", "direction": "output", "width": 4}
+    ],
+    "stimulus": {"mode": "boundary+random", "n": 600, "seed": 20260701},
+    "difficulty": "medium",
+    "tags": ["时序逻辑", "移位寄存器"]
+  }
+]

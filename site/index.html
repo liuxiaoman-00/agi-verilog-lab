@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AGH 驱动的数字逻辑「生成—验证—修复」闭环验证引擎</title>
+<meta name="description" content="以 Agnes Harness 为底座，自动验证 AI 生成的 Verilog：编译、仿真、综合、等价性比对、失败分类与定向修复。附完整可复核的跑批成绩。">
+<style>
+  :root{
+    --bg:#f7f8fa; --panel:#ffffff; --ink:#1c1f23; --ink-2:#4a5158; --ink-3:#767e87;
+    --line:#e3e6ea; --brand:#1a56db; --brand-soft:#eaf0fd;
+    --pass:#1a7f4b; --pass-soft:#e8f5ee; --fail:#b42318; --fail-soft:#fdeceb;
+    --warn:#a15c07; --warn-soft:#fdf3e3;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    line-height:1.75;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(160deg,#12294d 0%,#1a56db 100%);color:#fff;padding:52px 0 44px}
+  header .tag{display:inline-block;font-size:13px;letter-spacing:.04em;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.28);padding:4px 12px;border-radius:999px;margin-bottom:18px}
+  header h1{margin:0 0 14px;font-size:30px;line-height:1.4;font-weight:700}
+  header p{margin:0;color:rgba(255,255,255,.86);font-size:16px;max-width:720px}
+  header .meta{margin-top:22px;font-size:13px;color:rgba(255,255,255,.7)}
+  section{padding:40px 0;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:none}
+  h2{font-size:21px;margin:0 0 6px;letter-spacing:.01em}
+  .sub{color:var(--ink-3);font-size:14px;margin:0 0 22px}
+  h3{font-size:16px;margin:26px 0 10px}
+  p{margin:0 0 14px;color:var(--ink-2)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:6px 0 4px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 16px}
+  .card .n{font-size:26px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
+  .card .l{font-size:13px;color:var(--ink-3);margin-top:4px}
+  .card.blue .n{color:var(--brand)} .card.green .n{color:var(--pass)} .card.red .n{color:var(--fail)}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;overflow:hidden;font-size:14px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:#f2f4f7;font-weight:600;font-size:13px;color:var(--ink-2)}
+  tr:last-child td{border-bottom:none}
+  td.num{font-variant-numeric:tabular-nums}
+  .badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:6px;font-weight:600}
+  .b-pass{background:var(--pass-soft);color:var(--pass)}
+  .b-fail{background:var(--fail-soft);color:var(--fail)}
+  .b-warn{background:var(--warn-soft);color:var(--warn)}
+  .b-info{background:var(--brand-soft);color:var(--brand)}
+  .flow{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 18px}
+  .flow svg{width:100%;height:auto;display:block}
+  pre{background:#12161c;color:#dfe4ea;border-radius:10px;padding:16px 18px;overflow-x:auto;
+    font-family:var(--mono);font-size:12.5px;line-height:1.7;margin:0 0 14px}
+  pre .c{color:#7d8a99}
+  code{font-family:var(--mono);font-size:.92em;background:#eef1f5;padding:1px 6px;border-radius:4px}
+  .note{background:var(--brand-soft);border-left:3px solid var(--brand);padding:14px 18px;
+    border-radius:0 8px 8px 0;font-size:14px;color:var(--ink-2);margin:16px 0}
+  .note.warn{background:var(--warn-soft);border-left-color:var(--warn)}
+  ul{margin:0 0 14px;padding-left:22px;color:var(--ink-2)} li{margin-bottom:6px}
+  .kv{display:grid;grid-template-columns:150px 1fr;gap:6px 16px;font-size:14px}
+  .kv dt{color:var(--ink-3)} .kv dd{margin:0;color:var(--ink-2)}
+  footer{padding:30px 0 44px;color:var(--ink-3);font-size:13px}
+  a{color:var(--brand)}
+  @media(max-width:600px){header h1{font-size:23px}.kv{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="tag">2026 江苏省 AI+ 科学与工程创新实践黑客松 · 高校组（本科生）</span>
+    <h1>AGH 驱动的数字逻辑「生成—验证—修复」闭环验证引擎</h1>
+    <p>让 AI 写 Verilog，让编译器、仿真器、综合器和参考实现来判对错。全程不写一行人工测试用例，
+       失败自动分类、按类给药方、重新生成，直到通过或用尽轮数。</p>
+    <div class="meta">发布日期：2026-10-03　·　智能体底座：Agnes Harness（AGH）　·　模型：agnes-3.0-flash</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section>
+  <h2>一、要解决的问题</h2>
+  <p class="sub">数字电路教学里一个反复出现的真实痛点</p>
+  <p>学生写完一段 HDL，验证手段基本停留在「跑几个自己想的波形、看着对就交」。这带来三个具体问题：</p>
+  <ul>
+    <li>测试向量靠人凭经验挑，全 0、全 1、相等、溢出这类<b>边界</b>经常漏掉；</li>
+    <li>「逻辑完全正确，只是输出晚了一拍」这类错误肉眼极难发现；</li>
+    <li>不同人写的测试台强度差异巨大，成绩没有可比性。</li>
+  </ul>
+  <p>本项目的做法是把「验证」这件事从人工手里拿走：由规格自动生成测试台与激励，由工具链裁决对错，
+     并把「验证强度」变成一个<b>可度量的数字</b>——组合逻辑穷举输入空间，时序逻辑用 de Bruijn 序列
+     覆盖全部 k 阶输入模式。</p>
+</section>
+
+<section>
+  <h2>二、闭环是怎么转起来的</h2>
+  <p class="sub">AGH 负责任务规划、能力调用、反馈处理与结果验证四个环节</p>
+  <div class="flow">
+    <svg viewBox="0 0 900 250" role="img" aria-label="生成—验证—修复闭环流程图">
+      <defs>
+        <marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#8a93a0"/>
+        </marker>
+      </defs>
+      <g font-family="-apple-system,Segoe UI,PingFang SC,Microsoft YaHei,sans-serif">
+        <rect x="12" y="34" width="150" height="60" rx="10" fill="#eaf0fd" stroke="#1a56db" stroke-width="1.5"/>
+        <text x="87" y="60" text-anchor="middle" font-size="14" font-weight="600" fill="#12294d">1 功能规格</text>
+        <text x="87" y="79" text-anchor="middle" font-size="11.5" fill="#4a5158">接口契约 + 激励策略</text>
+
+        <rect x="196" y="34" width="150" height="60" rx="10" fill="#eaf0fd" stroke="#1a56db" stroke-width="1.5"/>
+        <text x="271" y="60" text-anchor="middle" font-size="14" font-weight="600" fill="#12294d">2 AGH 规划</text>
+        <text x="271" y="79" text-anchor="middle" font-size="11.5" fill="#4a5158">判定组合 / 时序</text>
+
+        <rect x="380" y="34" width="150" height="60" rx="10" fill="#eaf0fd" stroke="#1a56db" stroke-width="1.5"/>
+        <text x="455" y="60" text-anchor="middle" font-size="14" font-weight="600" fill="#12294d">3 模型生成</text>
+        <text x="455" y="79" text-anchor="middle" font-size="11.5" fill="#4a5158">agnes-3.0-flash</text>
+
+        <rect x="564" y="34" width="150" height="60" rx="10" fill="#e8f5ee" stroke="#1a7f4b" stroke-width="1.5"/>
+        <text x="639" y="60" text-anchor="middle" font-size="14" font-weight="600" fill="#125c37">4 自动验证</text>
+        <text x="639" y="79" text-anchor="middle" font-size="11.5" fill="#4a5158">编译 · 仿真 · 综合 · 比对</text>
+
+        <rect x="748" y="34" width="140" height="60" rx="10" fill="#e8f5ee" stroke="#1a7f4b" stroke-width="1.5"/>
+        <text x="818" y="60" text-anchor="middle" font-size="14" font-weight="600" fill="#125c37">5 通过</text>
+        <text x="818" y="79" text-anchor="middle" font-size="11.5" fill="#4a5158">逐向量一致</text>
+
+        <rect x="470" y="164" width="244" height="60" rx="10" fill="#fdeceb" stroke="#b42318" stroke-width="1.5"/>
+        <text x="592" y="190" text-anchor="middle" font-size="14" font-weight="600" fill="#8f1d14">失败分类 → 定向修复</text>
+        <text x="592" y="209" text-anchor="middle" font-size="11.5" fill="#4a5158">7 类失败，各自不同药方</text>
+
+        <line x1="162" y1="64" x2="192" y2="64" stroke="#8a93a0" stroke-width="1.6" marker-end="url(#ar)"/>
+        <line x1="346" y1="64" x2="376" y2="64" stroke="#8a93a0" stroke-width="1.6" marker-end="url(#ar)"/>
+        <line x1="530" y1="64" x2="560" y2="64" stroke="#8a93a0" stroke-width="1.6" marker-end="url(#ar)"/>
+        <line x1="714" y1="64" x2="744" y2="64" stroke="#8a93a0" stroke-width="1.6" marker-end="url(#ar)"/>
+        <path d="M639,94 L639,132 L592,132 L592,160" stroke="#b42318" stroke-width="1.6" fill="none" marker-end="url(#ar)"/>
+        <path d="M592,224 L592,242 L455,242 L455,100" stroke="#1a56db" stroke-width="1.6" fill="none" marker-end="url(#ar)"/>
+        <text x="470" y="256" text-anchor="middle" font-size="11.5" fill="#1a56db">重新生成（最多 N 轮）</text>
+      </g>
+    </svg>
+  </div>
+  <div class="note">
+    <b>关键设计：评判标准独立于生成过程。</b>对错由编译器、仿真器、综合器和人工参考实现共同裁决，
+    而不是由模型自我判断——所以「通过」这个结论是可复核、可复现的。
+  </div>
+</section>
+
+<section>
+  <h2>三、先证明裁判可靠，再让裁判打分</h2>
+  <p class="sub">一个会误判的裁判，给出的「通过」毫无价值</p>
+  <table>
+    <thead><tr><th>校准项</th><th>做法</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>参考实现自校准</td><td>把 13 个人工参考实现改名后当作候选提交，必须全部判为通过</td><td class="num"><span class="badge b-pass">13 / 13</span></td></tr>
+      <tr><td>已知缺陷检出</td><td>注入 7 个事先标注类别的缺陷，必须被判成标注的那一类</td><td class="num"><span class="badge b-pass">7 / 7</span></td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:14px">注入的缺陷覆盖：语法错误、接口违规、组合逻辑分支不完整（推断出锁存器）、输出节拍错位、
+     边界语义写错（仅 a==b 时暴露）、移位方向错误、使能优先级错误。合计 <b>20 / 20</b> 项元验证全部通过。</p>
+</section>
+
+<section>
+  <h2>四、真实跑批成绩（Agnes 模型实测，未调参）</h2>
+  <p class="sub">13 条原创规格，模型：agnes-3.0-flash，最大修复轮数 4</p>
+  <div class="cards">
+    <div class="card green"><div class="n">12 / 13</div><div class="l">最终通过率 92.3%</div></div>
+    <div class="card blue"><div class="n">7 / 13</div><div class="l">首次通过率 53.8%</div></div>
+    <div class="card"><div class="n">1.77</div><div class="l">平均尝试轮数</div></div>
+    <div class="card"><div class="n">481</div><div class="l">模型调用次数</div></div>
+    <div class="card"><div class="n">3.8 min</div><div class="l">端到端总耗时</div></div>
+  </div>
+
+  <h3>逐题结果</h3>
+  <table>
+    <thead><tr><th>规格</th><th>功能</th><th>结果</th><th>轮数</th><th>首轮通过</th><th>最后一轮失败类别</th></tr></thead>
+    <tbody>
+      <tr><td><code>cmp4</code></td><td>4 位比较器</td><td><span class="badge b-pass">PASS</span></td><td class="num">1</td><td>是</td><td>—</td></tr>
+      <tr><td><code>mux2v</code></td><td>2 选 1 多路器</td><td><span class="badge b-pass">PASS</span></td><td class="num">1</td><td>是</td><td>—</td></tr>
+      <tr><td><code>add4</code></td><td>4 位加法器</td><td><span class="badge b-pass">PASS</span></td><td class="num">1</td><td>是</td><td>—</td></tr>
+      <tr><td><code>dec38</code></td><td>3-8 译码器</td><td><span class="badge b-pass">PASS</span></td><td class="num">2</td><td>否</td><td><span class="badge b-fail">SYNTAX</span></td></tr>
+      <tr><td><code>penc8</code></td><td>8 位优先编码</td><td><span class="badge b-pass">PASS</span></td><td class="num">2</td><td>否</td><td><span class="badge b-fail">SYNTAX</span></td></tr>
+      <tr><td><code>bcdadd</code></td><td>BCD 个位加法</td><td><span class="badge b-fail">FAIL</span></td><td class="num">4</td><td>否</td><td><span class="badge b-fail">VALUE_MISMATCH</span></td></tr>
+      <tr><td><code>alu4</code></td><td>4 位 ALU</td><td><span class="badge b-pass">PASS</span></td><td class="num">1</td><td>是</td><td>—</td></tr>
+      <tr><td><code>posdet</code></td><td>边沿检测</td><td><span class="badge b-pass">PASS</span></td><td class="num">2</td><td>否</td><td><span class="badge b-fail">SYNTAX</span></td></tr>
+      <tr><td><code>sipo4</code></td><td>串入并出移位</td><td><span class="badge b-pass">PASS</span></td><td class="num">1</td><td>是</td><td>—</td></tr>
+      <tr><td><code>cnt12</code></td><td>12 进制计数器</td><td><span class="badge b-pass">PASS</span></td><td class="num">1</td><td>是</td><td>—</td></tr>
+      <tr><td><code>seq1011</code></td><td>1011 序列检测</td><td><span class="badge b-pass">PASS</span></td><td class="num">4</td><td>否</td><td><span class="badge b-warn">TIMING_SHIFT</span></td></tr>
+      <tr><td><code>traffic</code></td><td>交通灯状态机</td><td><span class="badge b-pass">PASS</span></td><td class="num">2</td><td>否</td><td><span class="badge b-fail">VALUE_MISMATCH</span></td></tr>
+      <tr><td><code>unishift4</code></td><td>通用移位寄存器</td><td><span class="badge b-pass">PASS</span></td><td class="num">1</td><td>是</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <b>唯一未通过项 bcdadd 是故意保留的。</b>模型习惯性地实现为「经典 BCD 加法器」（输入按 0~9 处理），
+    与本规格「输入按 0~15 二进制相加后取个位」不一致——这属于<b>看似合理、实则不符规格</b>的错误，
+    正是裁判存在的意义。这里如实保留失败记录，而不是通过改规格或调参把它「做」成通过。
+  </div>
+</section>
+
+<section>
+  <h2>五、失败分类学：不只是判对错，还要说清错在哪</h2>
+  <p class="sub">不同类别的失败，给药方完全不同</p>
+  <table>
+    <thead><tr><th>类别</th><th>含义</th><th>修复策略要点</th></tr></thead>
+    <tbody>
+      <tr><td><code>SYNTAX</code></td><td>编译失败</td><td>把编译器原文错误行喂回模型</td></tr>
+      <tr><td><code>PORT_MISMATCH</code></td><td>端口名 / 方向 / 位宽与规格不符</td><td>逐项列出差异，要求按契约改写</td></tr>
+      <tr><td><code>LATCH</code></td><td>综合后推断出锁存器（组合分支不完整）</td><td>补 default 分支、入口先赋默认值</td></tr>
+      <tr><td><code>COMB_LOOP</code></td><td>仿真超时，疑似组合反馈环</td><td>检查无寄存器的自反馈路径</td></tr>
+      <tr><td><code>RESET_X</code></td><td>复位释放后输出仍为不定态 X</td><td>检查复位分支是否覆盖全部寄存器</td></tr>
+      <tr><td><code>TIMING_SHIFT</code></td><td>逻辑正确但节拍超前 / 滞后 ±N 拍</td><td>超前改寄存输出；滞后去掉多余一级</td></tr>
+      <tr><td><code>VALUE_MISMATCH</code></td><td>存在与参考实现不一致的输入向量</td><td>把反例向量表喂回模型</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:14px"><code>TIMING_SHIFT</code> 是本项目特意做出来的一类：<code>seq1011</code> 的前三轮实现
+     <b>逻辑完全正确，只是输出晚了一拍</b>。若只做逐拍严格比对，它会被误判成功能错误，修复建议也就跟着跑偏。
+     这里对两条轨迹做 ±N 拍的平移重比对，把它单独识别出来——该题最终在第 4 轮修好。</p>
+</section>
+
+<section>
+  <h2>六、证据：每一次判定都留下了工具调用链</h2>
+  <p class="sub">命令、返回码、输出长度全部落盘，可直接复核查验</p>
+<pre><span class="c"># 以 cmp4 为例，验证一轮真实执行的三条命令</span>
+iverilog -Wall -Winfloop -g2012 -o a.out tb_vlab.v cmp4.v cmp4_golden.v
+vvp a.out
+yosys -Q -p "read_verilog cmp4.v; hierarchy -check -top cmp4; proc; opt; stat"</pre>
+  <dl class="kv">
+    <dt>跑批原始数据</dt><dd><code>runs/run_20261003_183630.json</code></dd>
+    <dt>模型调用留痕</dt><dd><code>runs/model_journal.jsonl</code>（逐条记录 purpose / 成败 / 时延 / 字符数）</dd>
+    <dt>元验证报告</dt><dd><code>runs/selfcheck.md</code>、<code>runs/selfcheck.json</code></dd>
+    <dt>工具层</dt><dd>MCP 服务 <code>python -m vlab.mcp_server</code>，暴露验证能力给 AGH</dd>
+    <dt>专业软件</dt><dd>Icarus Verilog 14.0（iverilog + vvp）、Yosys 0.69+185</dd>
+  </dl>
+  <div class="note">
+    工具层与 AGH 本体刻意解耦，因此在没有 AGH 的环境里，一条 <code>python run.py --all</code>
+    可以复现<b>完全一致</b>的判定结果——评委可以独立复核，不必信任本机的运行记录。
+  </div>
+</section>
+
+<section>
+  <h2>七、如何复现</h2>
+  <p class="sub">核心链路零第三方 Python 依赖</p>
+<pre><span class="c"># 1. 不需要 API Key，先验证工具链与闭环是否通畅</span>
+python run.py --list        <span class="c"># 查看 13 条规格</span>
+python run.py --selftest    <span class="c"># 元验证 + 用参考实现替代模型走完整闭环</span>
+
+<span class="c"># 2. 接入 Agnes 模型后正式评测</span>
+export AGNES_API_KEY=&lt;赛事官方群发放的 Key&gt;
+python run.py --all</pre>
+  <p>EDA 工具链使用开源 oss-cad-suite，代码会自动逐级向上寻找 <code>tools/oss-cad-suite</code>，
+     无需配置环境变量。Windows 下有两点需要注意：DLL 位于 <code>lib/</code> 子目录，必须一并加入子进程 PATH；
+     项目所有路径必须是纯 ASCII，iverilog 预处理器处理含中文的路径会失败。</p>
+</section>
+
+<section>
+  <h2>八、项目信息</h2>
+  <dl class="kv">
+    <dt>参赛组别</dt><dd>高校组 · 本科生组（单人独立完成）</dd>
+    <dt>参考方向</dt><dd>AI 驱动科学发现 / 工程仿真与优化</dd>
+    <dt>智能体底座</dt><dd>Agnes Harness（AGH），负责任务规划、能力调用、反馈处理、结果验证</dd>
+    <dt>模型</dt><dd>agnes-3.0-flash（中国站 api.agnes-ai.cn/v1），全链路仅调用 Agnes 模型</dd>
+    <dt>原创内容</dt><dd>13 条规格库 <code>benchmarks/specs.json</code>、13 份人工参考实现 <code>benchmarks/golden/*.v</code></dd>
+    <dt>第三方组件</dt><dd>oss-cad-suite 中的 iverilog / vvp / yosys，仅作被调用的专业软件使用，未修改其源码</dd>
+    <dt>发布日期</dt><dd>2026-10-03</dd>
+  </dl>
+</section>
+
+<footer>
+  <p style="margin:0">本作品由参赛学生独立完成。页面中的全部数字均来自本机真实运行产物，未作修饰；
+     唯一失败项 <code>bcdadd</code> 如实保留。</p>
+</footer>
+
+</div>
+</body>
+</html>
