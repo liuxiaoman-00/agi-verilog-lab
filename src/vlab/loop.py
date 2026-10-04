@@ -212,8 +212,12 @@ class TaskResult:
 
 # --------------------------------------------------------------------- 主流程
 def run_single_task(spec: Spec, model, backend: EDABackend, workdir: Path,
-                    max_attempts: int = 4) -> TaskResult:
-    """在一个规格上跑完整的闭环。"""
+                    max_attempts: int = 4, on_attempt=None) -> TaskResult:
+    """在一个规格上跑完整的闭环。
+
+    on_attempt：可选的回调 `f(attempt_index, record_dict)`，每轮裁决结束后调用，
+    用于把过程实时打到终端（演示录像用，不影响判定逻辑）。
+    """
     import time
     t0 = time.time()
     res = TaskResult(spec_id=spec.id, ok=False)
@@ -251,6 +255,9 @@ def run_single_task(spec: Spec, model, backend: EDABackend, workdir: Path,
         # ---- 步骤 3：工具层验证
         rec = evaluate_once(spec, candidate, backend, workdir, attempt=attempt)
         res.records.append(rec.to_dict())
+
+        if on_attempt is not None:
+            on_attempt(attempt, rec.to_dict())
 
         if rec.ok:
             res.ok = True

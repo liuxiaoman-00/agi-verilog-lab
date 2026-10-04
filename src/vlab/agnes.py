@@ -27,6 +27,32 @@ from pathlib import Path
 DEFAULT_BASE_URL = "https://api.agnes-ai.cn/v1"
 DEFAULT_MODEL = os.environ.get("AGNES_MODEL", "agnes-3.0-flash")
 
+# 密钥文件的候选位置（按顺序找，第一个非空的有效）。
+# 支持读取文件是为了**录屏/演示安全**：这样命令行历史与画面里都不会出现明文密钥。
+def _key_file_candidates() -> list[Path]:
+    here = Path(__file__).resolve().parents[2]  # 项目根
+    return [
+        Path.home() / ".agnes_key",
+        here / ".agnes_key",
+        here / "agnes.key",
+    ]
+
+
+def _resolve_api_key() -> str:
+    """按 环境变量 → 密钥文件 的顺序解析密钥，都没有则返回空字符串。"""
+    env = os.environ.get("AGNES_API_KEY", "").strip()
+    if env:
+        return env
+    for cand in _key_file_candidates():
+        try:
+            if cand.is_file():
+                value = cand.read_text(encoding="utf-8").strip()
+                if value:
+                    return value
+        except OSError:
+            continue
+    return ""
+
 
 class ModelCallError(RuntimeError):
     """模型调用最终失败。"""
@@ -53,7 +79,7 @@ class AgnesClient:
     def __init__(self, api_key: str | None = None, base_url: str = DEFAULT_BASE_URL,
                  model: str = DEFAULT_MODEL, timeout: int = 120, max_retries: int = 4,
                  journal_path: Path | None = None) -> None:
-        self.api_key = api_key or os.environ.get("AGNES_API_KEY", "")
+        self.api_key = api_key or _resolve_api_key()
         self.base_url = base_url.rstrip("/")
         self.model = model
         self.timeout = timeout
