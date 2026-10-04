@@ -3,6 +3,7 @@
 > 2026 年江苏省 AI+ 科学与工程创新实践黑客松（高校组）· 本科生组参赛作品
 > 统一命题：用 AI 完成一项可执行、可验证的科学、工程或设计任务
 >
+> **代码仓库（公开）**：https://github.com/liuxiaoman-00/agi-verilog-lab
 > **项目主页（公开发布，2026-10-03）**：https://verilog-loop-lab.app.workbuddy.host/
 > 公开原始证据见 `evidence/`，发布材料见 `docs/05_公开发布材料.md`
 
