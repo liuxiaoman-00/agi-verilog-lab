@@ -20,3 +20,7 @@ venv/
 # 密钥：绝对不要提交
 .env
 *.key
+
+# 提交打包产物（二进制 ZIP 与暂存目录不入库，team.json 需要入库）
+submit/_stage/
+submit/*.zip

@@ -105,7 +105,15 @@ agi-verilog-lab/
 python -m vlab.mcp_server          # 以 stdio 方式提供 MCP 服务
 ```
 
-暴露的工具：`plan_task` / `implement_module` / `verify_candidate` / `classify_failure`。
+暴露的工具共四个：
+
+| 工具 | 作用 |
+|---|---|
+| `list_specs` | 列出全部规格的接口契约与激励策略，供 AGH 做任务规划 |
+| `verify_candidate` | 对候选 Verilog 执行「编译 → 仿真 → 综合 → 逐向量比对」并返回裁决 |
+| `describe_verdict` | 解释裁决字段含义，供 AGH 选用修复策略 |
+| `stimulus_info` | 返回某条规格的激励构造方式与向量规模 |
+
 AGH 负责串联「任务规划 → 能力调用 → 反馈处理 → 结果验证」四个环节，
 每一次工具调用的入参、出参、耗时都被记录进 `runs/` 下的裁决流水，
 这些流水即提交材料中的「AGH 执行记录」与「工具调用链」证据。

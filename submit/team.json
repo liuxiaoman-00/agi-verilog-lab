@@ -1,0 +1,16 @@
+{
+  "group": "本科生组",
+  "team_no": "U104",
+  "team_name": "冲冲",
+  "leader": "【待填：队长姓名】",
+  "school": "【待填：学校】",
+  "college": "【待填：学院】",
+  "major": "【待填：专业】",
+  "grade": "【待填：年级】",
+  "date": "2026-10-05",
+  "model": "agnes-3.0-flash",
+  "homepage": "https://verilog-loop-lab.app.workbuddy.host/",
+  "repo": "https://github.com/liuxiaoman-00/agi-verilog-lab",
+  "video_main": "【待填：演示视频主链接】",
+  "video_backup": "（可选）"
+}
