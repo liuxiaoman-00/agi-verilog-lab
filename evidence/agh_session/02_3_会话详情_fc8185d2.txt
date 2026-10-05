@@ -1,0 +1,11 @@
+id       agnes:local:local-dev:cli:session:fc8185d2-a9c2-41a9-8794-874c7714c601
+title    -
+cwd      C:\Users\liumi\WorkBuddy\2026-10-02-20-04-02\agi-verilog-lab
+created  2026-10-05T04:08:00.550Z
+lastSeq  4
+preset   standard-windows
+archived no
+
+[stderr]
+(node:24956) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)

@@ -1,0 +1,17 @@
+{
+  "cwd": "C:/Users/liumi/WorkBuddy/2026-10-02-20-04-02/tools/agnes-harness",
+  "exe": "C:/Users/liumi/WorkBuddy/2026-10-02-20-04-02/tools/node24/node.exe",
+  "args": [
+    "packages/cli/dist/local/agnes.mjs",
+    "mcp", "add", "vlab-verifier",
+    "--name", "VerilogLoopVerifier",
+    "--stdio", "C:/Users/liumi/.workbuddy/binaries/python/versions/3.13.12/python.exe",
+    "--arg", "C:/Users/liumi/WorkBuddy/2026-10-02-20-04-02/agi-verilog-lab/mcp_stdio.py"
+  ],
+  "log": "C:/Users/liumi/WorkBuddy/2026-10-02-20-04-02/agi-verilog-lab/runs/_pty_mcpadd.log",
+  "sends": [
+    { "atMs": 5000, "text": "y\r" },
+    { "atMs": 12000, "text": "y\r" }
+  ],
+  "maxMs": 45000
+}

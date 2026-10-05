@@ -1,0 +1,9 @@
+{
+  "note": "AGH 真实会话证据。01/02/03 为会话清单、详情与 HTML 导出；AGH执行记录_host.jsonl 为 AGH 主机审计日志；AGH关键配置_configuration.json 为账号与模型配置（U104 / agnes-3.0-flash）。",
+  "sessionIds": [
+    "agnes:local:local-dev:cli:session:2b7cb820-0da0-4fc2-a97d-7f6cdc63a498",
+    "agnes:local:local-dev:cli:session:f804606f-955e-494a-9c55-64c729e64ec4",
+    "agnes:local:local-dev:cli:session:fc8185d2-a9c2-41a9-8794-874c7714c601",
+    "agnes:local:local-dev:cli:session:2957ff28-d3a4-4290-b720-3a4e3e55f520"
+  ]
+}

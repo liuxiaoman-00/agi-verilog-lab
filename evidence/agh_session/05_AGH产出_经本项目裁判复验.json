@@ -1,0 +1,64 @@
+{
+  "spec_id": "cmp4",
+  "attempt": 0,
+  "ok": true,
+  "verdict": "[comparison] PASS",
+  "failure_class": null,
+  "detail": "",
+  "compare": {
+    "total": 256,
+    "matched": 256,
+    "mismatched": 0,
+    "pass_rate": 1.0,
+    "x_events": 0,
+    "best_lag": 0,
+    "lag_matched": 0,
+    "first_mismatch": null,
+    "timed_out": false
+  },
+  "cells": {
+    "total": 3,
+    "latches": 0,
+    "flops": 0,
+    "raw": {
+      "$eq": 1,
+      "$gt": 1,
+      "$lt": 1
+    }
+  },
+  "stimulus": {
+    "mode": "exhaustive",
+    "count": 256,
+    "width": 8,
+    "coverage": 1.0
+  },
+  "tools_called": [
+    {
+      "tool": "iverilog",
+      "ok": true,
+      "returncode": 0,
+      "command": "C:\\Users\\liumi\\WorkBuddy\\2026-10-02-20-04-02\\tools\\oss-cad-suite\\bin\\iverilog.exe -Wall -Winfloop -g2012 -o C:\\Users\\liumi\\WorkBuddy\\2026-10-02-20-04-02\\agi-verilog-lab\\runs\\_crosscheck\\attempt_0\\a.out C:\\Users\\liumi\\WorkBuddy\\2026-10-02-20-04-02\\agi-verilog-lab\\runs\\_crosscheck\\attempt_0\\tb_vlab.v C:\\Users\\liumi\\WorkBuddy\\2026-10-02-20-04-02\\agi-verilog-lab\\runs\\_crosscheck\\attempt_0\\cmp4.v C:\\Users\\liumi\\WorkBuddy\\2026-10-02-20-04-02\\agi-verilog-lab\\runs\\_crosscheck\\attempt_0\\cmp4_golden.v",
+      "stdout_len": 0,
+      "stderr_len": 602
+    },
+    {
+      "tool": "vvp",
+      "ok": true,
+      "returncode": 0,
+      "command": "C:\\Users\\liumi\\WorkBuddy\\2026-10-02-20-04-02\\tools\\oss-cad-suite\\bin\\vvp.exe a.out",
+      "stdout_len": 5923,
+      "stderr_len": 0
+    },
+    {
+      "tool": "yosys",
+      "ok": true,
+      "returncode": 0,
+      "command": "C:\\Users\\liumi\\WorkBuddy\\2026-10-02-20-04-02\\tools\\oss-cad-suite\\bin\\yosys.exe -Q -p \nread_verilog C:\\Users\\liumi\\WorkBuddy\\2026-10-02-20-04-02\\agi-verilog-lab\\runs\\_crosscheck\\attempt_0\\cmp4.v\nhierarchy -check -top cmp4\nproc\nopt\nstat\n",
+      "stdout_len": 4506,
+      "stderr_len": 0
+    }
+  ],
+  "evidence": [],
+  "workdir": "C:\\Users\\liumi\\WorkBuddy\\2026-10-02-20-04-02\\agi-verilog-lab\\runs\\_crosscheck\\attempt_0",
+  "seconds": 1.805
+}

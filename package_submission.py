@@ -127,6 +127,14 @@ def build_evidence() -> None:
         else:
             print(f"  [跳过] 缺少 {src}")
 
+    # AGH 真实执行证据（整个子目录）
+    agh_dir = ev / "agh_session"
+    if agh_dir.exists():
+        shutil.copytree(agh_dir, dst / "AGH真实执行证据",
+                        ignore=shutil.ignore_patterns("*.log"))
+    else:
+        print("  [跳过] 缺少 evidence/agh_session")
+
 
 def build_source() -> None:
     """复制源代码快照（不含 runs/、.git、node_modules）。"""
@@ -154,6 +162,7 @@ def build_shots() -> None:
         "01_home_top.png": "01_项目主页首屏.png",
         "02_scores.png": "02_项目主页成绩单.png",
         "03_github_repo.png": "03_GitHub公开仓库.png",
+        "04_agh_session.png": "04_AGH真实执行证据.png",
     }
     for src_name, dst_name in naming.items():
         src = pub / src_name
@@ -221,7 +230,7 @@ SUBMIT_README_TEMPLATE = """# 提交说明与材料清单
 
 | 红线 | 本项目情况 |
 |---|---|
-| AGH 至少连续 3 步（规划 → 能力调用 → 反馈处理与结果验证），且 ≥1 条工具调用链记录 | 闭环四环节齐全；`06_运行证据/工具调用链_完整裁决流水.json` 内含逐次 iverilog / vvp / yosys 的命令、返回码与输出 |
+| AGH 至少连续 3 步（规划 → 能力调用 → 反馈处理与结果验证），且 ≥1 条工具调用链记录 | 闭环四环节齐全；2026-10-05 已在 AGH 中真实执行一次任务（账号 U104 / 模型 agnes-3.0-flash），read/write/todo 三次工具调用留有终端回显，AGH 产出的 Verilog 经本项目裁判复验 256/256 一致判 PASS；另见 `06_运行证据/工具调用链_完整裁决流水.json` 内逐次 iverilog / vvp / yosys 的命令与返回码 |
 | 必须同时提交正常 / 边界 / 失败三类测试样例 | `02_测试样例.md`：正常 13 条、边界 3 类、失败 7 条（含事先标注的期望类别） |
 | ≥1 条真实公开内容（平台 + 有效链接 + 截图 + 发布日期） | 项目主页（2026-10-03）与 GitHub 公开仓库（2026-10-04），截图见 `08_截图/` |
 
@@ -242,7 +251,8 @@ SUBMIT_README_TEMPLATE = """# 提交说明与材料清单
 │   ├── Agnes模型调用留痕.jsonl
 │   ├── 工具调用链_完整裁决流水.json
 │   ├── 专业验证结果_元验证报告.md / .json
-│   └── 真实跑批成绩.md
+│   ├── 真实跑批成绩.md
+│   └── AGH真实执行证据/          2026-10-05 AGH 真实会话 + 裁判复验
 ├── 07_源代码/                    可直接运行；与公开仓库一致
 └── 08_截图/                      主页首屏 / 成绩单 / GitHub 仓库页
 ```

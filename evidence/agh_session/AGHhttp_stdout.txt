@@ -1,0 +1,70 @@
+
+===== 1) add（HTTP）=====
+[?9001h[?1004h[?25l[2J[m[H(node:32360) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+]0;C:\Users\liumi\WorkBuddy\2026-10-02-20-04-02\tools\node24\node.exe[?25hadd MCP vlab-http (http) with trust=untrusted. Continue? [y/N] 
+>>> [add] "y\r"
+y
+operation resource-bbcaf6df-1b78-4a6f-99b0-4c818f095e46 received
+_agnes/v1/mcp.servers.create succeeded target=mcp/vlab-http revision=f5c0e9aa82096212e2143890a151c9242851a7f8351dd50353524115da521e82
+control plane updated; idle sessions use the new snapshot on the next request; in-flight turns keep the old snapshot until the turn ends
+MCP vlab-http 已创建，但尚未可用（trust=untrusted, desired=disabled）：先执行 /mcp trust vlab-http --expected-revision <revision> 完成信任审核，再执行 /mcp enable vlab-http --expected-revision <revision> 启用后才能被调用（<revision> 见上方 revision=…）
+
+===== 2) get =====
+[?9001h[?1004h[?25l[2J[m[H(node:28860) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+]0;C:\Users\liumi\WorkBuddy\2026-10-02-20-04-02\tools\node24\node.exe[?25hvlab-http revision=f5c0e9aa82096212e2143890a151c9242851a7f8351dd50353524115da521e82 trust=untrusted desired=disabled actual=disabled transport=http
+>>> revision=f5c0e9aa82096212e2143890a151c9242851a7f8351dd50353524115da521e82
+
+===== 3) trust =====
+[?9001h[?1004h[?25l[2J[m[H(node:33084) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+]0;C:\Users\liumi\WorkBuddy\2026-10-02-20-04-02\tools\node24\node.exe[?25htrust MCP vlab-http at revision f5c0e9aa82096212e2143890a151c9242851a7f8351dd50353524115da521e82 trust=trusted. Continue? [y/N] 
+>>> [trust] "y\r"
+y
+operation resource-17290262-c0da-43b3-9f02-6ea345d4cd85 received
+_agnes/v1/mcp.servers.trust.set succeeded target=mcp/vlab-http revision=f5c0e9aa82096212e2143890a151c9242851a7f8351dd50353524115da521e82
+control plane updated; idle sessions use the new snapshot on the next request; in-flight turns keep the old snapshot until the turn ends
+[?9001h[?1004h[?25l[2J[m[H(node:20768) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+]0;C:\Users\liumi\WorkBuddy\2026-10-02-20-04-02\tools\node24\node.exe[?25hvlab-http revision=f5c0e9aa82096212e2143890a151c9242851a7f8351dd50353524115da521e82 trust=trusted desired=disabled actual=disabled transport=http
+===== 4) enable =====
+[?9001h[?1004h[?25l[2J[m[H(node:9272) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+]0;C:\Users\liumi\WorkBuddy\2026-10-02-20-04-02\tools\node24\node.exe[?25henable MCP vlab-http at revision f5c0e9aa82096212e2143890a151c9242851a7f8351dd50353524115da521e82. Continue? [y/N] 
+>>> [enable] "y\r"
+y
+operation resource-1e6ce87f-bf7e-4b23-a810-11469d586017 received
+_agnes/v1/mcp.servers.enable failed target=mcp/vlab-http revision=f5c0e9aa82096212e2143890a151c9242851a7f8351dd50353524115da521e82
+MCP_RECONCILE_FAILED: MCP lifecycle adapter failed safely
+
+===== 5) test =====
+[?9001h[?1004h[?25l[2J[m[H(node:25452) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+]0;C:\Users\liumi\WorkBuddy\2026-10-02-20-04-02\tools\node24\node.exe[?25hvlab-http revision=f5c0e9aa82096212e2143890a151c9242851a7f8351dd50353524115da521e82 trust=trusted desired=enabled actual=unavailable transport=http[?9001h[?1004h[?25l[2J[m[H(node:25920) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+]0;C:\Users\liumi\WorkBuddy\2026-10-02-20-04-02\tools\node24\node.exe[?25htest MCP vlab-http at revision f5c0e9aa82096212e2143890a151c9242851a7f8351dd50353524115da521e82. Continue? [y/N] 
+>>> [test] "y\r"
+y
+operation resource-1d48461d-a14a-45af-bc1f-82c234a848f7 received
+_agnes/v1/mcp.servers.test failed target=mcp/vlab-http revision=f5c0e9aa82096212e2143890a151c9242851a7f8351dd50353524115da521e82
+MCP_RECONCILE_FAILED: MCP lifecycle adapter failed safely
+
+===== 6) status / tools =====
+[?9001h[?1004h[?25l[2J[m[H(node:2256) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+]0;C:\Users\liumi\WorkBuddy\2026-10-02-20-04-02\tools\node24\node.exe[?25hvlab-http connection=unavailable revision=none catalog=none tools=0
+MCP_CONNECT_FAILED: Error: this MCP transport requires HTTPS, or a local daemon with explicit loopback policy[?9001h[?1004h[?25l[2J[m[H(node:12300) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+]0;C:\Users\liumi\WorkBuddy\2026-10-02-20-04-02\tools\node24\node.exe[?25hagnes: SEMANTIC_REJECTED (-32011) MCP_CATALOG_UNAVAILABLE
+JsonRpcError: SEMANTIC_REJECTED (-32011)
+    at RpcConnection.dispatch (file:///C:/Users/liumi/WorkBuddy/2026-10-02-20-04-02/tools/agnes-harness/packages/cli/dist/local/agnes.mjs:340160:36)
+    at Object.onMessage (file:///C:/Users/liumi/WorkBuddy/2026-10-02-20-04-02/tools/agnes-harness/packages/cli/dist/local/agnes.mjs:340057:29)
+    at WindowsPipeStream.<anonymous> (file:///C:/Users/liumi/WorkBuddy/2026-10-02-20-04-02/tools/agnes-harness/packages/cli/dist/local/agnes.mjs:342643:22)
+    at WindowsPipeStream.emit (node:events:508:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+    at Readable.push (node:internal/streams/readable:390:5)
+    at file:///C:/Users/liumi/WorkBuddy/2026-10-02-20-04-02/tools/agnes-harness/packages/cli/dist/local/agnes.mjs:333563:16
+
+完成
